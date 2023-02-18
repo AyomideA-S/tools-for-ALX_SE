@@ -7,7 +7,7 @@ of the **[ALX Software Engineering](https://intranet.alxswe.com)** programme.
 choose whichever ones you want to install.
 
 The script is also specially optimized for the *Ubuntu* Linux OS, more
-specifically **Ubuntu 22.04+** and **Ubuntu 20.04+**.
+specifically **Ubuntu 20.04+**.
 
 ## Usage
 

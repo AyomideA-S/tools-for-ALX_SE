@@ -20,15 +20,15 @@ Flags:
     --help\t Display this usage information and exit.
     --version\t Display the program version and exit.\n
 Options:
-1. All\t\t To install all tools included in (2) to (7).
-2. Zero-day\t Covers all tools under the Zero day section of the programme.
-3. Low-level\t Covers all tools under the Low-level programming & Algorithm section of the programme.
-4. Higher-level\t Covers all tools under the Higher-level programming section of the programme.
-5. Devops\t Covers all tools under the System engineering & DevOps section of the programme.
-6. More\t\t Includes tools like Ruby, Hydra, Docker and Nginx.
-7. Upgrade\t To update and upgrade all of the Ubuntu packages.
-8. Info\t\t To display system information.
-9. Quit\t\t To exit the program.\n'
+ 1. All\t\t To install all tools included in (2) to (7).
+ 2. Zero-day\t Covers all tools under the Zero day section of the programme.
+ 3. Low-level\t Covers all tools under the Low-level programming & Algorithm section of the programme.
+ 4. Higher-level\t Covers all tools under the Higher-level programming section of the programme.
+ 5. Devops\t Covers all tools under the System engineering & DevOps section of the programme.
+ 6. More\t\t Includes tools like Ruby, Hydra, Docker and Nginx.
+ 7. Upgrade\t To update and upgrade all of the Ubuntu packages.
+ 8. Info\t\t To display system information.
+ 9. Quit\t\t To exit the program.\n'
 }
 
     # Licensing
@@ -76,6 +76,11 @@ install_betty() {
     chmod a+x betty
     sudo mv betty /bin/betty
     cd ..
+}
+install_make() {
+	# make
+	sudo apt update
+	sudo apt install make
 }
 install_sdl2() {
     # SDL2
@@ -268,6 +273,7 @@ select opt in $OPTIONS; do
         # Low-level programming & Algorithm
         install_gcc
         install_betty
+        install_make
         install_sdl2
         # Higher-level programming
         install_python
@@ -308,16 +314,19 @@ select opt in $OPTIONS; do
         done
 
     elif [ "$opt" = "Low-level" ]; then
-        SUB_OPTIONS="All GCC Betty SDL2 Back"
+        SUB_OPTIONS="All GCC Betty Make SDL2 Back"
         select sub_opt in $SUB_OPTIONS; do
             if [ "$sub_opt" = "All" ]; then
                 install_gcc
                 install_betty
+                install_make
                 install_sdl2
             elif [ "$sub_opt" = "GCC" ]; then
                 install_gcc
             elif [ "$sub_opt" = "Betty" ]; then
                 install_betty
+            elif [ "$sub_opt" = "Make" ]; then
+                install_make
             elif [ "$sub_opt" = "SDL2" ]; then
                 install_sdl2
             elif [ "$sub_opt" = "Back" ]; then
