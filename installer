@@ -1,0 +1,429 @@
+#!/usr/bin/env bash
+# A Bash script to install all dependencies for the ALX Software Engineering
+# program.
+
+VERSION=$(sudo cat /etc/os-release | grep VERSION_ID | cut -b 13-14)
+FLAG1=$1
+FLAG2=$2
+shift;
+
+# Reusable functions
+    # Help
+display_help() {
+    printf \
+'
+Usage: installer [--version] [--help] [show]\n
+Flags:
+    show\t Show details about the license.
+        w\t\t To display Disclaimer of Warranty.
+        c\t\t To display Terms and Conditions.
+    --help\t Display this usage information and exit.
+    --version\t Display the program version and exit.\n
+Options:
+1. All\t\t To install all tools included in (2) to (7).
+2. Zero-day\t Covers all tools under the Zero day section of the programme.
+3. Low-level\t Covers all tools under the Low-level programming & Algorithm section of the programme.
+4. Higher-level\t Covers all tools under the Higher-level programming section of the programme.
+5. Devops\t Covers all tools under the System engineering & DevOps section of the programme.
+6. More\t\t Includes tools like Ruby, Hydra, Docker and Nginx.
+7. Upgrade\t To update and upgrade all of the Ubuntu packages.
+8. Info\t\t To display system information.
+9. Quit\t\t To exit the program.\n'
+}
+
+    # Licensing
+display_license() {
+    TYPE=$FLAG2
+    if [ "$TYPE" = "w" ]; then
+        head -598 COPYING | tail +589 || exit
+    elif [ "$TYPE" = "c" ]; then
+        sed -n '71,621p' COPYING || exit
+    fi
+    printf '\n'
+}
+
+    # Version
+display_version() {
+    cat VERSION || exit
+    printf '\n'
+}
+
+
+    # Zero day
+install_git() {
+    # Git
+    sudo apt-get install git
+}
+install_vagrant() {
+    # Vagrant
+    sudo apt-get install virtualbox
+    sudo apt-get install vagrant
+}
+
+    # Low-level programming & Algorithm
+install_gcc() {
+    # GCC
+    sudo apt-get update
+    sudo apt install build-essential
+    sudo apt-get install manpages-dev
+}
+install_betty() {
+    # Betty
+    git clone https://github.com/holbertonschool/Betty.git
+    cd Betty || exit
+    sudo ./install.sh
+    cp dependencies/betty ./betty
+    chmod a+x betty
+    sudo mv betty /bin/betty
+    cd ..
+}
+install_sdl2() {
+    # SDL2
+    sudo apt-get install build-essential git make \
+    pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
+    libaudio-dev libjack-dev libsndio-dev libsamplerate0-dev libx11-dev libxext-dev \
+    libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev \
+    libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+    libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev fcitx-libs-dev \
+    # For Ubuntu 22.04+
+    if [ "$VERSION" -ge 22 ]; then
+        sudo apt-get install libpipewire-0.3-dev libwayland-dev libdecor-0-dev
+    fi
+
+    sudo apt-get install libsdl2-dev
+}
+
+    # Higher-level programming
+install_python() {
+    # Python
+    sudo apt install software-properties-common
+    sudo add-apt-repository ppa:deadsnakes/ppa
+    sudo apt update
+    sudo apt install python3.8
+    sudo apt install python-is-python3
+}
+install_pip() {
+    # Pip
+    sudo apt install python3-pip
+    wget https://bootstrap.pypa.io/get-pip.py
+    python get-pip.py
+}
+install_pythondev() {
+    # Python Dev
+    sudo apt install -y build-essential libssl-dev libffi-dev python3-dev
+    sudo apt-get update
+}
+install_myqsl() {
+    # MySQL
+    sudo apt install mysql-server
+    sudo apt-get install libmysqlclient-dev
+    sudo apt-get install zlib1g-dev
+    sudo pip3 install mysqlclient
+    sudo pip3 install SQLAlchemy
+
+    sudo mysql_secure_installation
+}
+install_node() {
+    # JavaScript
+    curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    sudo npm install semistandard --global
+}
+install_modules() {
+    # Other modules
+    sudo apt-get install python3.4-dev
+    sudo apt-get install libpython3-dev
+    sudo apt install nginx
+}
+install_pipmodules() {
+    # Pip modules
+    pip3 install requests
+    pip3 uninstall Fabric
+    pip3 install pyparsing
+    pip3 install appdirs
+    pip3 install setuptools==40.1.0
+    pip3 install cryptography==2.8
+    pip3 install bcrypt==3.1.7
+    pip3 install PyNaCl==1.3.0
+    pip3 install Fabric3==1.14.post1
+    pip3 install Flask
+}
+
+    # System engineering & DevOps
+install_shellcheck() {
+    # Shell
+    sudo apt-get update
+    sudo apt-get -y install shellcheck
+}
+install_haproxy() {
+    # HAProxy
+    # For Ubuntu 22.04+
+    if [ "$VERSION" -eq 16 ]; then
+        apt-get install --no-install-recommends software-properties-common
+        add-apt-repository ppa:vbernat/haproxy-2.0
+        apt-get install haproxy=2.0.\*
+    elif [ "$VERSION" -ge 18 ]; then
+        apt-get install --no-install-recommends software-properties-common
+        add-apt-repository ppa:vbernat/haproxy-2.6
+        apt-get install haproxy=2.6.\*
+    fi
+}
+install_myqsl5_7() {
+    # MySQL 5.7
+    sudo apt-key add dependencies/signature.key
+    sudo sh -c 'echo "deb http://repo.mysql.com/apt/ubuntu bionic mysql-5.7" >> /etc/apt/sources.list.d/mysql.list'
+    sudo apt-get update
+    sudo apt install -f mysql-client=5.7* mysql-community-server=5.7* mysql-server=5.7*
+}
+install_puppet() {
+    # Puppet
+    apt-get install -y ruby=1:2.7+1 --allow-downgrades
+    apt-get install -y ruby-augeas
+    apt-get install -y ruby-shadow
+    apt-get install -y puppet
+    gem install puppet-lint
+}
+## Security
+install_certbot() {
+    # certtbot
+    sudo apt install certbot
+}
+install_openssh() {
+    # OpenSSH
+    sudo apt update
+    sudo apt install openssh-server
+    sudo ufw allow ssh
+}
+
+    # More!
+install_ruby() {
+    # Ruby
+    sudo apt-get install ruby-full
+}
+install_hydra() {
+    # Hydra
+    sudo apt install hydra
+}
+install_docker() {
+    # Docker
+    sudo apt-get update
+    sudo apt-get install \
+        ca-certificates \
+        curl \
+        gnupg \
+        lsb-release
+    sudo mkdir -m 0755 -p /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+}
+install_nginx() {
+    #nginx
+    sudo apt install nginx
+}
+
+
+if [ "$FLAG1" = "--help" ]; then
+    display_help
+    exit
+elif [ "$FLAG1" = "show" ]; then
+    display_license
+    exit
+elif [ "$FLAG1" = "--version" ]; then
+    display_version
+    exit
+fi
+
+
+echo \
+'tools-for-ALX_SE  Copyright (C) 2023  Ayomide Ayodele-Soyebo
+This program comes with ABSOLUTELY NO WARRANTY; for details type `show w".
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c" for details.
+'
+# https://github.com/AyomideA-S/tools-for-ALX_SE/COPYING
+
+
+echo \
+'------------------------------------------------------------------------
+It is advised to run the program as root else you might run into errors.
+------------------------------------------------------------------------
+
+This is a Bash script to install all dependencies for the ALX Software Engineering program.
+P.S. Hit the "enter" key to show the options again.
+
+Select the category you wish to install:'
+OPTIONS="All Zero-day Low-level Higher-level Devops More Upgrade Info Quit"
+select opt in $OPTIONS; do
+	if [ "$opt" = "All" ]; then
+        sudo apt-get update
+        sudo apt-get upgrade
+        # Zero day
+        install_git
+        install_vagrant
+        # Low-level programming & Algorithm
+        install_gcc
+        install_betty
+        install_sdl2
+        # Higher-level programming
+        install_python
+        install_pip
+        install_pythondev
+        install_myqsl
+        install_node
+        install_modules
+        install_pipmodules
+        # System engineering & DevOps
+        install_shellcheck
+        install_haproxy
+        install_myqsl5_7
+        install_puppet
+            ## Security
+        install_certbot
+        install_openssh
+        # More!
+        install_ruby
+        install_hydra
+        install_docker
+
+    elif [ "$opt" = "Zero-day" ]; then
+        SUB_OPTIONS="All Git Vagrant Back"
+        select sub_opt in $SUB_OPTIONS; do
+            if [ "$sub_opt" = "All" ]; then
+                install_git
+                install_vagrant
+            elif [ "$sub_opt" = "Git" ]; then
+                install_git
+            elif [ "$sub_opt" = "Vagrant" ]; then
+                install_vagrant
+            elif [ "$sub_opt" = "Back" ]; then
+                break
+            else
+		        echo 'Bad option!'
+            fi
+        done
+
+    elif [ "$opt" = "Low-level" ]; then
+        SUB_OPTIONS="All GCC Betty SDL2 Back"
+        select sub_opt in $SUB_OPTIONS; do
+            if [ "$sub_opt" = "All" ]; then
+                install_gcc
+                install_betty
+                install_sdl2
+            elif [ "$sub_opt" = "GCC" ]; then
+                install_gcc
+            elif [ "$sub_opt" = "Betty" ]; then
+                install_betty
+            elif [ "$sub_opt" = "SDL2" ]; then
+                install_sdl2
+            elif [ "$sub_opt" = "Back" ]; then
+                break
+            else
+		        echo 'Bad option!'
+            fi
+        done
+
+    elif [ "$opt" = "Higher-level" ]; then
+        SUB_OPTIONS="All Python Pip Python-dev MySQL JavaScript Modules Pip-modules Back"
+        select sub_opt in $SUB_OPTIONS; do
+            if [ "$sub_opt" = "All" ]; then
+                install_python
+                install_pip
+                install_pythondev
+                install_myqsl
+                install_node
+                install_modules
+                install_pipmodules
+            elif [ "$sub_opt" = "Python" ]; then
+                install_python
+            elif [ "$sub_opt" = "Pip" ]; then
+                install_pip
+            elif [ "$sub_opt" = "Python-dev" ]; then
+                install_pythondev
+            elif [ "$sub_opt" = "MySQL" ]; then
+                install_myqsl
+            elif [ "$sub_opt" = "JavaScript" ]; then
+                install_node
+            elif [ "$sub_opt" = "Modules" ]; then
+                install_modules
+            elif [ "$sub_opt" = "Pip-modules" ]; then
+                install_pipmodules
+            elif [ "$sub_opt" = "Back" ]; then
+                break
+            else
+		        echo 'Bad option!'
+            fi
+        done
+
+    elif [ "$opt" = "Devops" ]; then
+        SUB_OPTIONS="All Shellcheck HAProxy MySQL5.7 Puppet OpenSSH Certbot Back"
+        select sub_opt in $SUB_OPTIONS; do
+            if [ "$sub_opt" = "All" ]; then
+                install_shellcheck
+                install_haproxy
+                install_myqsl5_7
+                install_puppet
+                install_openssh
+                install_certbot
+            elif [ "$sub_opt" = "Shellcheck" ]; then
+                install_shellcheck
+            elif [ "$sub_opt" = "HAProxy" ]; then
+                install_haproxy
+            elif [ "$sub_opt" = "MySQL5.7" ]; then
+                install_myqsl5_7
+            elif [ "$sub_opt" = "Puppet" ]; then
+                install_puppet
+            elif [ "$sub_opt" = "OpenSSH" ]; then
+                install_openssh
+            elif [ "$sub_opt" = "Certbot" ]; then
+                install_certbot
+            elif [ "$sub_opt" = "Back" ]; then
+                break
+            else
+		        echo 'Bad option!'
+            fi
+        done
+
+    elif [ "$opt" = "More" ]; then
+        SUB_OPTIONS="All Ruby Hydra Docker Nginx Back"
+        select sub_opt in $SUB_OPTIONS; do
+            if [ "$sub_opt" = "All" ]; then
+                install_ruby
+                install_hydra
+                install_docker
+                install_nginx
+            elif [ "$sub_opt" = "Ruby" ]; then
+                install_ruby
+            elif [ "$sub_opt" = "Hydra" ]; then
+                install_hydra
+            elif [ "$sub_opt" = "Docker" ]; then
+                install_docker
+            elif [ "$sub_opt" = "Nginx" ]; then
+                install_nginx
+            elif [ "$sub_opt" = "Back" ]; then
+                break
+            else
+		        echo 'Bad option!'
+            fi
+        done
+
+    elif [ "$opt" = "Upgrade" ]; then
+		sudo apt update && apt upgrade
+
+    elif [ "$opt" = "Info" ]; then
+        # Extras
+        lsb_release -a && hostnamectl && cat /etc/os-release
+
+    elif [ "$opt" = "Quit" ]; then
+		exit
+
+	else
+		echo 'Bad option!'
+
+    fi
+done
+exit
