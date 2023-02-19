@@ -96,6 +96,11 @@ install_sdl2() {
     fi
 
     sudo apt-get install libsdl2-dev
+
+    cp dependencies/install_SDL2.sh ./install_SDL2.sh
+    chmod 755 install_SDL2.sh
+    ./install_SDL2.sh
+    rm install_SDL2.sh
 }
 
     # Higher-level programming
@@ -162,12 +167,13 @@ install_shellcheck() {
 }
 install_haproxy() {
     # HAProxy
-    # For Ubuntu 22.04+
     if [ "$VERSION" -eq 16 ]; then
+    	# Ubuntu 16.04
         apt-get install --no-install-recommends software-properties-common
         add-apt-repository ppa:vbernat/haproxy-2.0
         apt-get install haproxy=2.0.\*
     elif [ "$VERSION" -ge 18 ]; then
+    	# Ubuntu 18.04+
         apt-get install --no-install-recommends software-properties-common
         add-apt-repository ppa:vbernat/haproxy-2.6
         apt-get install haproxy=2.6.\*
