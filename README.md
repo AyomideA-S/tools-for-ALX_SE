@@ -20,7 +20,7 @@ $ sudo ./installer --help
 1) All &emsp;&emsp;&emsp;&emsp;&emsp; To install all tools included in (2) to (7).  
 2) Zero-day &emsp;&emsp;&nbsp; Covers all tools under the *Zero day* section of the programme.  
 3) Low-level &emsp;&emsp; Covers all tools under the *Low-level programming & Algorithm* section of the programme.  
-4) Higher-level &emsp; Covers all tools under the *Higher-level programming* section of the programme.  
+4) Higher-level &emsp; Covers all tools under the *Higher-level programming* section of the programme except __Nginx__.  
 5) Devops &emsp;&emsp;&ensp;&ensp; Covers all tools under the *System engineering & DevOps* section of the programme.  
 6) More &emsp;&emsp;&emsp;&emsp; Includes tools like **Ruby**, **Hydra**, **Docker** and **Nginx**.  
 7) Upgrade &emsp;&emsp;&ensp; To update and upgrade all of the Ubuntu packages.  
