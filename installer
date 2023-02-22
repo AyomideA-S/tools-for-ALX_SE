@@ -35,7 +35,7 @@ Options:
 display_license() {
     TYPE=$FLAG2
     if [ "$TYPE" = "w" ]; then
-        head -598 COPYING | tail +589 || exit
+        sed -n '589,598p' COPYING || exit
     elif [ "$TYPE" = "c" ]; then
         sed -n '71,621p' COPYING || exit
     fi
@@ -124,13 +124,14 @@ install_pythondev() {
     sudo apt-get update
 }
 install_myqsl() {
-    # MySQL
+    # MySQL 8.0
     sudo apt install mysql-server
     sudo apt-get install libmysqlclient-dev
     sudo apt-get install zlib1g-dev
     sudo pip3 install mysqlclient
     sudo pip3 install SQLAlchemy
-
+}
+install_mysql_secure() {
     sudo mysql_secure_installation
 }
 install_node14() {
@@ -148,6 +149,7 @@ install_node10() {
 # Modules
 install_pipmodules() {
     # Pip modules
+    pip3 install pycodestyle
     pip3 install requests
     pip3 install Flask
     sudo pip3 install pathlib2
@@ -445,13 +447,14 @@ select opt in $OPTIONS; do
         done
 
     elif [ "$opt" = "More" ]; then
-        SUB_OPTIONS="All Ruby Hydra Docker Nginx Back"
+        SUB_OPTIONS="All Ruby Hydra Docker Nginx mqsql_secure Back"
         select sub_opt in $SUB_OPTIONS; do
             if [ "$sub_opt" = "All" ]; then
                 install_ruby
                 install_hydra
                 install_docker
                 install_nginx
+                install_mysql_secure
             elif [ "$sub_opt" = "Ruby" ]; then
                 install_ruby
             elif [ "$sub_opt" = "Hydra" ]; then
@@ -460,6 +463,8 @@ select opt in $OPTIONS; do
                 install_docker
             elif [ "$sub_opt" = "Nginx" ]; then
                 install_nginx
+            elif [ "$sub_opt" = "mqsql_secure" ]; then
+                install_mqsql_secure
             elif [ "$sub_opt" = "Back" ]; then
                 break
             else
